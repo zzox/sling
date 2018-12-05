@@ -1,0 +1,40 @@
+{
+  "greenPlayer": {
+    "sheet": "greenPlayer",
+    "anims": [
+      {
+        "key": "greenPlayer-idle",
+        "frames": {"start": 0, "end": 1},
+        "frameRate": 3
+      },
+      {
+        "key": "greenPlayer-jump",
+        "frames": {"start": 2, "end": 3},
+        "frameRate": 6
+      },
+      {
+        "key": "greenPlayer-dash",
+        "frames": {"start": 4, "end": 4}
+      }
+    ]
+  },
+  "pinkPlayer": {
+    "sheet": "pinkPlayer",
+    "anims": [
+      {
+        "key": "pinkPlayer-idle",
+        "frames": {"start": 0, "end": 1},
+        "frameRate": 3
+      },
+      {
+        "key": "pinkPlayer-jump",
+        "frames": {"start": 2, "end": 3},
+        "frameRate": 6
+      },
+      {
+        "key": "pinkPlayer-dash",
+        "frames": {"start": 4, "end": 4}
+      }
+    ]
+  }
+}
