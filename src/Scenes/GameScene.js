@@ -25,29 +25,36 @@ export default class GameScene extends Phaser.Scene {
     })
 
     this.socket.on('gameState', gameState => {
-      // console.log(gameState)
       this.gameState = gameState
     })
 
+
+    // change to dynamic loading colors
     this.load.image('green-particle', 'assets/particles/greenParticle.png')
-    this.load.image('pink-particle', 'assets/particles/pinkParticle.png')
+    this.load.image('gray-particle', 'assets/particles/grayParticle.png')
     this.load.image('white-particle', 'assets/particles/whiteParticle.png')
     this.load.image('gold-particle', 'assets/particles/goldParticle.png')
     this.load.image('purple-particle', 'assets/particles/purpleParticle.png')
+
+    this.load.image('fast', 'assets/powerups/fast.png')
+    this.load.image('faster', 'assets/powerups/faster.png')
+    this.load.image('threeJumps', 'assets/powerups/threeJumps.png')
+    this.load.image('fourJumps', 'assets/powerups/fourJumps.png')
+    this.load.image('fire', 'assets/powerups/fire.png')
 
     this.stage = 'stage1'
 
     this.animsConfig = this.sys.cache.json.entries.entries.animations
 
-    this.load.spritesheet('greenPlayer', `assets/players/greenPlayer.png`, {frameWidth: 14, frameHeight: 14, spacing: 2, margin: 1 })
-    this.load.spritesheet('pinkPlayer', `assets/players/pinkPlayer.png`, {frameWidth: 14, frameHeight: 14, spacing: 2, margin: 1 })
+    this.load.spritesheet('greenPlayer', `assets/players/greenPlayer.png`, { frameWidth: 14, frameHeight: 14, spacing: 2, margin: 1 })
+    this.load.spritesheet('grayPlayer', `assets/players/grayPlayer.png`, { frameWidth: 14, frameHeight: 14, spacing: 2, margin: 1 })
     this.load.spritesheet(`slingTile1`, `assets/tilesets/slingTile1.png`, { frameWidth: 12, frameHeight: 12, spacing: 2, margin: 1 })
     this.load.tilemapTiledJSON(this.stage, `assets/tilemaps/${this.stage}.json`)
   }
 
   create () {
     // this.add.bitmapText(20, 20, 'font', 'start coding!')
-    this.animsArray = ['greenPlayer', 'pinkPlayer']
+    this.animsArray = ['greenPlayer', 'grayPlayer']
     this.createAnimations()
 
     this.map = this.make.tilemap({
@@ -55,7 +62,6 @@ export default class GameScene extends Phaser.Scene {
     })
 
     this.cameras.main
-      .fadeIn(500)
       .setBackgroundColor(`#${'878787'}`)
 
     this.contactTileSet = this.map.addTilesetImage('slingTile1', `slingTile1`)
@@ -82,7 +88,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     this.player1 = new Player(this, 1, 'green')
-    this.player2 = new Player(this, 2, 'pink')
+    this.player2 = new Player(this, 2, 'gray')
 
     this.player1.create()
     this.player2.create()
@@ -109,11 +115,48 @@ export default class GameScene extends Phaser.Scene {
         player2: 0
       }
     }
+
+    this.prevState = {
+      over: false
+    }
+
+    this.newGame()
   }
 
-  update () {
+  newGame () {
+    this.cameras.main
+      .fadeIn(500)
 
-    if(!this.gameState) return
+    this.gameOverTimer = 1000
+    this.gameOverTime = 0
+    this.gameOver = false
+    this.fading = false
+  }
+
+  update (t, delta) {
+
+    if (!this.prevState.over && this.gameState.over) {
+      this.gameOver = true
+    }
+
+    if (this.gameOver) {
+      this.gameOverTime += delta
+    }
+
+    if (this.gameOverTime > this.gameOverTimer) {
+      if(!this.fading) {
+        this.cameras.main.fadeOut(750)
+        this.fading = true
+      }
+    }
+
+    if (this.prevState.over && !this.gameState.over) {
+      if (this.gameState.matchOver) {
+
+      } else {
+        this.newGame()
+      }
+    }
 
     this.player1.update(this.gameState.player1.state)
     this.player2.update(this.gameState.player2.state)
@@ -137,12 +180,6 @@ export default class GameScene extends Phaser.Scene {
         dash: input.twoDash
       }
     })
-
-    if(this.gameState.colliding) {
-      console.log('colliding!!!')
-      console.log(this.player1)
-      console.log(this.player2)
-    }
 
     if (this.score.player1 !== this.gameState.score.player1 ||
       this.score.player2 !== this.gameState.score.player2) {
@@ -191,7 +228,11 @@ export default class GameScene extends Phaser.Scene {
           this.display.text = ''
           break
       }
-    // }
+
+    this.prevState = {
+      over: this.gameState.over,
+      powerups: this.gameState.powerups
+    }
   }
 
   createAnimations () {
