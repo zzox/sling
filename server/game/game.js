@@ -115,10 +115,6 @@ class Game {
   }
 
   update (delta) {
-
-    // delta = 17
-    // console.log(delta)
-
     // timers
     if (this.over) {
       if(this.gameOverTime > this.gameOverTimer){
@@ -161,13 +157,6 @@ class Game {
 
 
 
-
-
-
-
-
-
-
     if(this.powerUpTime >= this.powerUpTimer && !this.powerUpsAdded) {
       
       this.powerUpRandom1 = Math.random() * 3000 + 6000
@@ -203,7 +192,7 @@ class Game {
       console.log(p)
 
       this.powerUpsScr.push({ name: p, x: 12, y: h * 35 + 23 })
-      this.powerUpsScr.push({ name: p, x: 96, y: h * 35 + 23 })
+      this.powerUpsScr.push({ name: p, x: 168, y: h * 35 + 23 })
 
       this.powerUp1Added = true
     }
@@ -230,8 +219,8 @@ class Game {
 
       console.log(p)
 
-      this.powerUpsScr.push({ name: p, x: 12, y: h * 35 + 23 })
-      this.powerUpsScr.push({ name: p, x: 96, y: h * 35 + 23 })
+      this.powerUpsScr.push({ name: p, x: 12, y: h * 35 + 25 })
+      this.powerUpsScr.push({ name: p, x: 168, y: h * 35 + 25 })
 
       this.powerUp2Added = true
     }
@@ -242,26 +231,21 @@ class Game {
       let p = this.powerUpsScr[i]
       if (Math.abs(this.powerUpsScr[i].x - this.player1.state.x) < 4 &&
         Math.abs(this.powerUpsScr[i].y - this.player1.state.y) < 4) {
+        this.player1.state.powerUps.push(p.name)
         this.addPowerUp(1, p.name)
         this.powerUpsScr.splice(i, 1)
         max -= 1
+        continue
       }
 
-      // if (Math.abs(this.powerUpsScr[i].x - this.player2.state.x) < 4 &&
-      //   Math.abs(this.powerUpsScr[i].y - this.player2.state.y) < 4) {
-      //   this.player2.state.powerUps.push(p.name)
-      //   this.addPowerUp(2, p.name)
-      //   this.powerUpsScr.splice(i, 1)
-      // }
+      if (Math.abs(this.powerUpsScr[i].x - this.player2.state.x) < 4 &&
+        Math.abs(this.powerUpsScr[i].y - this.player2.state.y) < 4) {
+        this.player2.state.powerUps.push(p.name)
+        this.addPowerUp(2, p.name)
+        this.powerUpsScr.splice(i, 1)
+        max -= 1
+      }
     }
-
-
-
-
-
-
-
-
 
     if (this.over || (this.player1.state.dashing && this.player2.state.dashing)) {
       delta = delta / 3
@@ -423,7 +407,6 @@ class Game {
     }
   }
 
-
   getState () {
     return {
       over: this.over,
@@ -506,7 +489,6 @@ class Game {
 
     this.checkMatchOver()
     this.over = true
-
   }
 
   checkMatchOver () {

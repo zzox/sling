@@ -5,9 +5,11 @@ export default class TitleScene extends Phaser.Scene {
 
   preload(){
     this.load.image('selector', 'assets/menu/selector.png')
+    this.load.image('title', 'assets/menu/sling.png')
   }
 
   create(){
+    this.add.image(96, 26, 'title')
     this.add.bitmapText(30, 85, 'font', 'New Game')
     this.add.bitmapText(30, 105, 'font', 'Continue')
 
