@@ -42,8 +42,6 @@ io.on('connect', function(socket){
 
 	gamesArray.push(newGame)
 
-	console.log(gamesArray.length)
-	
 	if (!intervalSet){
 		setInterval(() => {
 			updateGames(socket)
