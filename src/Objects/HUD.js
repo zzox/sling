@@ -14,6 +14,9 @@ export default class HUD {
     this.player1PowerUps = this.scene.add.group()
     this.player2PowerUps = this.scene.add.group()
 
+    this.player1pu = []
+    this.player2pu = []
+
     this.score = { 
       player1: 0, 
       player2: 0 
@@ -29,6 +32,16 @@ export default class HUD {
     if (this.score.player2 !== this.scene.gameState.score.player2) {
       this.score.player2 = this.scene.gameState.score.player2
       this.drawPoints(2)
+    }
+
+    if (this.player1pu.length !== this.scene.gameState.player1.state.powerUps.length) {
+    	this.player1pu = this.scene.gameState.player1.state.powerUps
+    	this.drawPowerUps(1)
+    }
+
+    if (this.player2pu.length !== this.scene.gameState.player2.state.powerUps.length) {
+    	this.player2pu = this.scene.gameState.player2.state.powerUps
+    	this.drawPowerUps(2)
     }
 
     switch (this.scene.gameState.display) {
@@ -66,6 +79,22 @@ export default class HUD {
         this.display.text = ''
         break
     }
+	}
+
+	drawPowerUps (playerNo) {
+		let group = this[`player${playerNo}PowerUps`].clear(true, true)
+		
+		if (playerNo === 1) {
+			for(let i = 0; i < this.player1pu.length; i++){
+				group.add(this.scene.add.image(i * 12 + 6, 18, this.player1pu[i]))
+			}
+		}
+
+		if (playerNo === 2) {
+			for(let i = 0; i < this.player2pu.length; i++){
+				group.add(this.scene.add.image(i * -12 + 186, 18, this.player2pu[i]))
+			}
+		}
 	}
 
 	drawPoints (playerNo) {

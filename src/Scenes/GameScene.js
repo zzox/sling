@@ -120,7 +120,8 @@ export default class GameScene extends Phaser.Scene {
         inAir: false,
         dashing: false,
         lost: false,
-        won: false
+        won: false,
+        powerUps: []
       },
       player2: {
         x: 211,
@@ -128,7 +129,8 @@ export default class GameScene extends Phaser.Scene {
         inAir: false,
         dashing: false,
         lost: false,
-        won: false
+        won: false,
+        powerUps: []
       },
       score: {
         player1: 0,

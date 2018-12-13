@@ -557,12 +557,6 @@ class Game {
         }
         break
     }
-
-    if (player === 1) {
-      this.player1.state.powerUps.push(powerUp)
-    } else {
-      this.player2.state.powerUps.push(powerUp)
-    }
   }
 }
 

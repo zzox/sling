@@ -10,25 +10,25 @@ export default class TitleScene extends Phaser.Scene {
 
   create(){
     this.add.image(96, 26, 'title')
-    this.add.bitmapText(30, 85, 'font', 'New Game')
-    this.add.bitmapText(30, 105, 'font', 'Continue')
+    this.add.bitmapText(80, 70, 'font', 'vs AI')
+    this.add.bitmapText(80, 90, 'font', 'Local')
 
     this.menuPositions = 2
     this.menuPos = 1
 
-    this.spr = this.add.sprite(14, 88, 'selector')
+    this.spr = this.add.sprite(68, 67, 'selector')
 
     this.prevState = {
-      startKey: true,      
-      upKey: true,     
-      downKey: true      
+      moveKey: true,
+      startKey: true      
     }
 
-    this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
-    this.upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W)
-    this.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+    this.moveKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
+    this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
 
     this.cameras.main.fadeIn(2000)
+
+    this.music = this.sound.playAudioSprite('audio', 'theme', { loop: true })
   }
 
   update(){
@@ -40,28 +40,21 @@ export default class TitleScene extends Phaser.Scene {
       this.loadGame()
     }
 
-    if(this.downKey.isDown && this.downKey.isDown !== this.prevState.downKey){
+    if(this.moveKey.isDown && this.moveKey.isDown !== this.prevState.moveKey){
       if(this.menuPos === this.menuPositions){
-        this.menuPos = this.menuPositions // only for main
-      } else {
-        // this.sound.playAudioSprite('soundtrack', 'selector', { volume: 0.5 })
-        this.menuPos++
-      }
-    } else if(this.upKey.isDown && this.upKey.isDown !== this.prevState.upKey){
-      if(this.menuPos === 1){
         this.menuPos = 1 // only for main
       } else {
-        // this.sound.playAudioSprite('soundtrack', 'selector', { volume: 0.5 })
-        this.menuPos--
+        this.menuPos++
       }
+      
+      this.sound.playAudioSprite('audio', 'selector', { volume: 0.5 })
     }
 
-    this.spr.y = this.menuPos * 20 + 68
+    this.spr.y = this.menuPos * 20 + 54
 
     this.prevState = {
-      startKey: this.startKey.isDown,
-      upKey: this.upKey.isDown,
-      downKey: this.downKey.isDown
+      moveKey: this.moveKey.isDown,
+      startKey: this.startKey.isDown
     }
   }
 
@@ -77,15 +70,14 @@ export default class TitleScene extends Phaser.Scene {
   pauseMusic () {
     let sounds = this.sound.sounds
     for(let i = 0; i < sounds.length; i++) {
-      if(sounds[i].key === 'soundtrack') {
+      if(sounds[i].key === 'audio') {
         this.sound.sounds[i].pause()
       }
     }
   }
 
   clearKeys () {
-    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
-    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.W)
+    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.A)
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.S)
   }
 

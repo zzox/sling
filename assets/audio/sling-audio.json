@@ -1,0 +1,50 @@
+{
+  "resources": [
+    "sling-audio.ogg",
+    "sling-audio.m4a",
+    "sling-audio.mp3",
+    "sling-audio.ac3"
+  ],
+  "spritemap": {
+    "theme": {
+      "start": 0,
+      "end": 59.07693877551021,
+      "loop": false
+    },
+    "dash": {
+      "start": 61,
+      "end": 63,
+      "loop": false
+    },
+    "selector": {
+      "start": 64,
+      "end": 65.5,
+      "loop": false
+    },
+    "lose": {
+      "start": 67,
+      "end": 69,
+      "loop": false
+    },
+    "jump": {
+      "start": 70,
+      "end": 72,
+      "loop": false
+    },
+    "slomo": {
+      "start": 73,
+      "end": 75,
+      "loop": false
+    },
+    "powerup": {
+      "start": 76,
+      "end": 78,
+      "loop": false
+    },
+    "win": {
+      "start": 79,
+      "end": 81,
+      "loop": false
+    }
+  }
+}

@@ -9,6 +9,19 @@ export default class BootScene extends Phaser.Scene {
   {
     this.resize()
 
+    this.load.audioSprite('audio', 
+      'assets/audio/sling-audio.json',
+      [
+        'assets/audio/sling-audio.mp3',
+        'assets/audio/sling-audio.ac3',
+        'assets/audio/sling-audio.m4a',
+        'assets/audio/sling-audio.ogg',
+      ], 
+      {
+        instances: 4
+      }
+    )
+
     this.load.bitmapFont('font', 'assets/fonts/manaspace.png', 'assets/fonts/manaspace.fnt')
 
     this.load.json('animations', 'assets/data/animations.json')
