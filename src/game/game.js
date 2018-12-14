@@ -14,10 +14,8 @@ const redirVel = 600
 const jumpTimer = 135
 
 class Game {
-  constructor({ gameId, getInput }) {
-    this.gameId = gameId
-    this.getInput = getInput
-
+  constructor(scene, matchTo) {
+  	this.scene = scene
     this.initState()
 
     this.numGames = 0
@@ -28,7 +26,7 @@ class Game {
     }
 
     this.matchOver = false
-    this.scoreTo = 7
+    this.matchTo = matchTo
     this.matchWinner = null
   }
 
@@ -114,7 +112,7 @@ class Game {
     this.powerUpsScr = []
   }
 
-  update (delta) {
+  update (delta, input) {
     // timers
     if (this.over) {
       if(this.gameOverTime > this.gameOverTimer){
@@ -155,8 +153,6 @@ class Game {
 
     this.powerUpTime += delta
 
-
-
     if(this.powerUpTime >= this.powerUpTimer && !this.powerUpsAdded) {
       
       this.powerUpRandom1 = Math.random() * 3000 + 6000
@@ -189,8 +185,6 @@ class Game {
         this.powerUps.push('faster')
       }
 
-      console.log(p)
-
       this.powerUpsScr.push({ name: p, x: 12, y: h * 35 + 23 })
       this.powerUpsScr.push({ name: p, x: 168, y: h * 35 + 23 })
 
@@ -217,8 +211,6 @@ class Game {
         }
       }
 
-      console.log(p)
-
       this.powerUpsScr.push({ name: p, x: 12, y: h * 35 + 25 })
       this.powerUpsScr.push({ name: p, x: 168, y: h * 35 + 25 })
 
@@ -235,6 +227,7 @@ class Game {
         this.addPowerUp(1, p.name)
         this.powerUpsScr.splice(i, 1)
         max -= 1
+				this.scene.sound.playAudioSprite('audio', 'powerup', { volume: 0.1 })
         continue
       }
 
@@ -244,6 +237,7 @@ class Game {
         this.addPowerUp(2, p.name)
         this.powerUpsScr.splice(i, 1)
         max -= 1
+				this.scene.sound.playAudioSprite('audio', 'powerup', { volume: 0.1 })
       }
     }
 
@@ -253,7 +247,7 @@ class Game {
     }
 
     let perSec = delta / 1000
-    let input = this.getInput(this.gameId)
+    // let input = this.getInput(this.gameId)
 
     if (input.player1.jump) {
       this.player1.innerState.jumpTime += delta
@@ -280,7 +274,8 @@ class Game {
             this.player1.innerState.yVel = -jumpVel * perSec
             this.player1.state.inAir = true
             this.player1.innerState.jumping = true
-            if (input.player1.jump && !this.prevInput.player1.jump) {
+            if (input.player1.jump && !this.prevInput.player1.jump && !this.over) {
+            	this.scene.sound.playAudioSprite('audio', 'jump', { volume: 0.2 })
               this.player1.innerState.jumps++
             }
       } else {
@@ -294,7 +289,8 @@ class Game {
         this.player1.innerState.yVel = -maxYVel * perSec
       }
 
-      if (input.player1.dash && !this.prevInput.player1.dash && this.started) {
+      if (input.player1.dash && !this.prevInput.player1.dash && this.started && !this.over) {
+      	this.scene.sound.playAudioSprite('audio', 'dash', { volume: 0.2 })
         this.player1.state.dashing = true
       }
     } else {
@@ -315,7 +311,8 @@ class Game {
             this.player2.innerState.yVel = -jumpVel * perSec
             this.player2.state.inAir = true
             this.player2.innerState.jumping = true
-            if (input.player2.jump && !this.prevInput.player2.jump) {
+            if (input.player2.jump && !this.prevInput.player2.jump && !this.over) {
+            	this.scene.sound.playAudioSprite('audio', 'jump', { volume: 0.2 })
               this.player2.innerState.jumps++
             }
       } else {
@@ -328,7 +325,8 @@ class Game {
         this.player2.innerState.yVel = -maxYVel * perSec
       } 
 
-      if (input.player2.dash && this.started) {
+      if (input.player2.dash && !this.prevInput.player1.dash && this.started && !this.over) {
+      	this.scene.sound.playAudioSprite('audio', 'dash', { volume: 0.2 })
         this.player2.state.dashing = true
       }
     } else {
@@ -414,6 +412,8 @@ class Game {
       colliding: this.colliding,
       score: this.score,
       powerUpsScr: this.powerUpsScr,
+      matchOver: this.matchOver,
+      winner: this.matchWinner,
       player1: {
         state: this.player1.state
       },
@@ -462,6 +462,7 @@ class Game {
         this.display = 'tie'
         this.player1.innerState.xVel = -this.player1.innerState.xVel
         this.player2.innerState.xVel = -this.player2.innerState.xVel
+				this.scene.sound.playAudioSprite('audio', 'selector', { volume: 0.2 })
         break
       case (1):
         this.player1.state.won = true
@@ -472,6 +473,7 @@ class Game {
           this.display = 'onehit'
           this.redirect(2, ratio, perSec)
         }
+				this.scene.sound.playAudioSprite('audio', 'win', { volume: 0.2 })
         this.score.player1 += points
         break
       case (2):
@@ -483,6 +485,7 @@ class Game {
           this.display = 'twohit'
           this.redirect(1, ratio, perSec)
         }
+				this.scene.sound.playAudioSprite('audio', 'lose', { volume: 0.2 })
         this.score.player2 += points
         break
     }
@@ -492,7 +495,13 @@ class Game {
   }
 
   checkMatchOver () {
-    // if(this.player1.score)
+    if (this.score.player1 >= this.matchTo ||
+    	this.score.player2 >= this.matchTo) {
+    	this.matchOver = true
+    	this.matchWinner = this.score.player1 > this.score.player2 ?
+    	  'player1' :
+    	  'player2'
+    }
   }
 
   redirect (loser, ratio, perSec) {
@@ -561,21 +570,4 @@ class Game {
 }
 
 
-
-updateGame = (data) => {
-  if(data){
-    for (let player in data) {
-      let p = data[player]
-
-    }
-
-    return data
-  } 
-}
-
-// updateInput = (data) => {
-//  console.log(data)
-// }
-
-
-module.exports = Game
+export default Game

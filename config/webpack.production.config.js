@@ -34,7 +34,7 @@ module.exports = (env, options) => {
       path: build,
       filename: '[name].bundle.js',
       chunkFilename: '[name].bundle.js',
-      publicPath: '/'
+      publicPath: './'
     },
     optimization: {
       splitChunks: {

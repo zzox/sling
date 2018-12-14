@@ -1,0 +1,52 @@
+{
+	"one": {
+		"backgroundColor": "9fddf2",
+		"nextStage": "two",
+		"matchTo": 1,
+		"ai": {
+			"color": "gray",
+			"decisionTime": 250,
+			"randomSmarts": 0.1
+		}
+	},
+	"two": {
+		"backgroundColor": "6eefd3",
+		"nextStage": "three",
+		"matchTo": 7,
+		"ai": {
+			"color": "blue",
+			"decisionTime": 200,
+			"randomSmarts": 0.25
+		}
+	},
+	"three": {
+		"backgroundColor": "e2c973",
+		"nextStage": "four",
+		"matchTo": 11,
+		"ai": {
+			"color": "pink",
+			"decisionTime": 150,
+			"randomSmarts": 0.4
+		}
+	},
+	"four": {
+		"backgroundColor": "ccc9c1",
+		"nextStage": "five",
+		"matchTo": 11,
+		"ai": {
+			"color": "cyan",
+			"decisionTime": 100,
+			"randomSmarts": 0.6
+		}
+	},
+	"five": {
+		"backgroundColor": "adacab",
+		"nextStage": "over",
+		"matchTo": 16,
+		"ai": {
+			"color": "white",
+			"decisionTime": 50,
+			"randomSmarts": 0.85
+		}
+	}
+}

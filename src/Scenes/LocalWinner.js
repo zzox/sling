@@ -1,17 +1,24 @@
-export default class TitleScene extends Phaser.Scene {
+export default class LocalWinner extends Phaser.Scene {
   constructor(test) {
-    super({ key: 'TitleScene' })
+    super({ key: 'LocalWinner' })
   }
 
   preload(){
     this.load.image('selector', 'assets/menu/selector.png')
-    this.load.image('title', 'assets/menu/sling.png')
+
   }
 
   create(){
-    this.add.image(96, 26, 'title')
-    this.add.bitmapText(80, 70, 'font', 'vs AI')
-    this.add.bitmapText(80, 90, 'font', 'Local')
+    this.add.bitmapText(80, 70, 'font', 'Restart')
+    this.add.bitmapText(80, 90, 'font', 'Quit')
+
+    this.winner = this.sys.settings.data.winner
+
+    if (this.winner === 'player1') {
+      this.add.bitmapText(55, 20, 'font', 'Player 1 Wins!')
+    } else {
+      this.add.bitmapText(55, 20, 'font', 'Player 2 Wins!')
+    }
 
     this.menuPositions = 2
     this.menuPos = 1
@@ -27,19 +34,16 @@ export default class TitleScene extends Phaser.Scene {
     this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
 
     this.cameras.main.fadeIn(2000)
-
-    this.music = this.sound.playAudioSprite('audio', 'theme', { loop: true })
   }
 
   update(){
     if(this.startKey.isDown && !this.prevState.startKey && this.menuPos === 1){
       this.pauseMusic()
-      this.vsAI()
+      this.restart()
       return
     } else if(this.startKey.isDown && !this.prevState.startKey && this.menuPos === 2){
       this.pauseMusic()
-      this.local()
-      return
+      this.quit()
     }
 
     if(this.moveKey.isDown && this.moveKey.isDown !== this.prevState.moveKey){
@@ -60,14 +64,14 @@ export default class TitleScene extends Phaser.Scene {
     }
   }
 
-  vsAI(){
-    this.clearKeys()
-    this.scene.start('GameScene', { local: false, stage: 'one' })
-  }
-
-  local(){
+  restart(){
     this.clearKeys()
     this.scene.start('GameScene', { local: true })
+  }
+
+  quit(){
+    this.clearKeys()
+    this.scene.start('TitleScene')
   }
 
   pauseMusic () {

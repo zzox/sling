@@ -1,6 +1,8 @@
 import io from 'socket.io-client'
 import Player from '../Player/Player'
+import AI from '../Player/AI'
 import HUD from '../Objects/HUD'
+import game from '../game/game'
 
 export default class GameScene extends Phaser.Scene {
   constructor (config) {
@@ -12,25 +14,28 @@ export default class GameScene extends Phaser.Scene {
   }
 
   preload () {
+    this.local = this.sys.settings.data.local
 
-    //listen output
-    // get gameid
-    this.socket = io('http://localhost:5000')
+    if (!this.local) {
+      this.stage = this.sys.settings.data.stage
+      this.stageConfig = this.sys.cache.json.entries.entries.stages[this.stage]
 
-    this.socket.on('connect', function(item){
-      console.log('connected!!!')
-    })
+      console.log(this.stage)
 
-    this.socket.on('gameId', gameId => {
-      this.gameId = gameId
-    })
-
-    this.socket.on('gameState', gameState => {
-      this.gameState = gameState
-    })
+      this.ai = this.stageConfig.ai
+      this.matchTo = this.stageConfig.matchTo
+    } else {
+      // this.matchTo = 16
+      this.matchTo = 7
+    }
+    this.gameObj = new game(this, this.matchTo)
 
     this.player1Color = 'green'
-    this.player2Color = 'blue'
+    if (this.local) {
+      this.player2Color = 'pink'
+    } else {
+      this.player2Color = this.stageConfig.ai.color
+    }
 
     // change to dynamic loading colors
     this.load.image(`${this.player1Color}-particle`, `assets/particles/${this.player1Color}Particle.png`)
@@ -48,9 +53,7 @@ export default class GameScene extends Phaser.Scene {
     this.load.image('fourJumps', 'assets/powerups/fourJumps.png')
     this.load.image('fire', 'assets/powerups/fire.png')
 
-    this.stage = 'stage1'
-
-    this.load.image(`${this.stage}-background`, `assets/backgrounds/${this.stage}.png`)
+    this.load.image('background', `assets/backgrounds/background.png`)
     this.load.image('sling-tile', `assets/tilesets/sling-tile.png`)
 
     this.animsConfig = this.sys.cache.json.entries.entries.animations
@@ -66,7 +69,7 @@ export default class GameScene extends Phaser.Scene {
     this.animsArray = [`${this.player1Color}Player`, `${this.player2Color}Player`]
     this.createAnimations()
 
-    this.add.image(96, 72, `${this.stage}-background`)
+    this.add.image(96, 72, 'background')
       .setAlpha(0.45)
 
     this.add.image(18, 114, 'sling-tile')
@@ -75,15 +78,17 @@ export default class GameScene extends Phaser.Scene {
     // this.map = this.make.tilemap({
     //   key: this.stage
     // })
+    if (this.local) {
+      let r = Math.floor(Math.random() * 5)
+      console.log(r)
+      this.cameras.main
+        .setBackgroundColor(`#${this.colors()[r]}`)
+    } else {
+      let color = this.stageConfig.backgroundColor
 
-    this.cameras.main
-      .setBackgroundColor(`#${'9fddf2'}`)
-
-    // 9fddf2
-    // 6eefd3
-    // e2c973
-    // ccc9c1
-    // adacab
+      this.cameras.main
+        .setBackgroundColor(`#${color}`)
+    }
 
     // this.contactTileSet = this.map.addTilesetImage('slingTile1', `slingTile1`)
     // this.contactLayer = this.map.createDynamicLayer('contactLayer', this.contactTileSet, 0, 0)
@@ -99,15 +104,26 @@ export default class GameScene extends Phaser.Scene {
     this.HUD = new HUD(this)
     // this.HUD.create()
 
-    this.keys = {
-      oneJump: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-      oneDash: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
-      twoJump: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L),
-      twoDash: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K)
+    if (this.local) {
+      this.keys = {
+        oneJump: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+        oneDash: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+        twoJump: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L),
+        twoDash: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K)
+      }
+    } else {
+      this.keys = {
+        oneJump: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+        oneDash: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+      }
     }
 
     this.player1 = new Player(this, 1, this.player1Color)
-    this.player2 = new Player(this, 2, this.player2Color)
+    if(this.local){
+      this.player2 = new Player(this, 2, this.player2Color)
+    } else {
+      this.player2 = new AI(this, 2, this.stageConfig.ai)
+    }
 
     this.player1.create()
     this.player2.create()
@@ -139,11 +155,18 @@ export default class GameScene extends Phaser.Scene {
     }
 
     this.prevState = {
-      over: false
+      over: false,
+      powerUpsScrLen: 0
     }
 
     this.powerUpsOnScreen = []
     this.powerUps = this.add.group()
+
+    if (!this.local) {
+      this.aiState = 'idle'
+      this.decisionTimer = this.ai.decisionTime
+      this.decisionTime = 0
+    }
 
     this.newGame()
   }
@@ -162,6 +185,84 @@ export default class GameScene extends Phaser.Scene {
 
   update (t, delta) {
 
+    let input
+
+    if (this.local) {
+      input = {
+        player1: {
+          jump: this.keys.oneJump.isDown,
+          dash: this.keys.oneDash.isDown
+        },
+        player2: {
+          jump: this.keys.twoJump.isDown,
+          dash: this.keys.twoDash.isDown
+        }
+      }
+    } else {
+      let jump = false 
+      let dash = false
+
+      let player1 = this.gameState.player1.state
+      let player2 = this.gameState.player2.state
+
+      if (!this.over) {
+        if (this.decisionTime > this.decisionTimer) {
+
+          let abs = Math.abs(player1.y - player2.y)
+          let r = Math.random()
+
+          if ((player1.y < player2.y || abs > 24) && r < this.ai.randomSmarts * 3) {
+            this.aiState = 'jump'
+          } else if (player1.y > player2.y && Math.abs(player1.y - player2.y) < 24 && r < this.ai.randomSmarts){
+            this.aiState = 'dash'
+          } else if (player1.y === player2.y && r < (this.ai.randomSmarts / 3)) {
+            this.aiState = 'dashJump'
+          // } else if (r < 1 - this.ai.randomSmarts * 3){
+          //   this.aiState = 'dash'
+          //   console.log('this dash')
+          } else {
+            this.aiState = 'idle'
+          }
+
+          console.log(this.aiState)
+
+          this.decisionTime = 0
+        } else {
+          this.decisionTime += delta
+        }
+
+        switch (this.aiState) {
+          case ('idle'):
+            break
+          case ('jump'):
+            jump = true
+            break
+          case ('dash'):
+            dash = true
+            break
+          case ('dashJump'):
+            dash = true
+            jump = true
+            break
+        }
+      }
+
+      input = {
+        player1: {
+          jump: this.keys.oneJump.isDown,
+          dash: this.keys.oneDash.isDown
+        },
+        player2: {
+          jump: jump,
+          dash: dash
+        }
+      }
+    }
+
+    this.gameObj.update(delta, input)
+
+    this.gameState = this.gameObj.getState()
+
     if (!this.prevState.over && this.gameState.over) {
       this.gameOver = true
     }
@@ -179,7 +280,15 @@ export default class GameScene extends Phaser.Scene {
 
     if (this.prevState.over && !this.gameState.over) {
       if (this.gameState.matchOver) {
-
+        if (this.local) {
+          this.scene.start('LocalWinner', this.gameState.winner)
+        } else {
+          if (this.gameState.winner === 'player1') {
+            this.scene.start('AIEnd', { won: true, stage: this.stageConfig.nextStage })
+          } else {
+            this.scene.start('AIEnd', { won: false, stage: this.stage })
+          }
+        }
       } else {
         this.newGame()
       }
@@ -188,100 +297,27 @@ export default class GameScene extends Phaser.Scene {
     this.player1.update(this.gameState.player1.state)
     this.player2.update(this.gameState.player2.state)
 
-    let input = {
-      oneJump: this.keys.oneJump.isDown,
-      oneDash: this.keys.oneDash.isDown,
-      twoJump: this.keys.twoJump.isDown,
-      twoDash: this.keys.twoDash.isDown
-    }
-
-    //emit input(gameid)
-    this.socket.emit('gameInput', {
-      gameId: this.gameId,
-      player1: {
-        jump: input.oneJump,
-        dash: input.oneDash
-      },
-      player2: {
-        jump: input.twoJump,
-        dash: input.twoDash
-      }
-    })
-
     this.HUD.update()
 
-    // if (this.gameState.over) {
-      // console.log('over')
-      // switch (this.gameState.display) {
-      //   case ('count3'):
-      //     this.display.text = '        3'
-      //     break
-      //   case ('count2'):
-      //     this.display.text = '        2'
-      //     break
-      //   case ('count1'):
-      //     this.display.text = '        1'
-      //     break
-      //   case ('go'):
-      //     this.display.text = '       GO!'
-      //     break
-      //   case ('onehit'):
-      //     this.display.text = ' Player 1 hits!'
-      //     break
-      //   case ('twohit'):
-      //     this.display.text = ' Player 2 hits!'
-      //     break
-      //   case ('one'):
-      //     this.display.text = ' Player 1 wins.'
-      //     break
-      //   case ('two'):
-      //     this.display.text = ' Player 2 wins.'
-      //     break
-      //   case ('tie'):
-      //     this.display.text = '  It\'s a tie!'
-      //     break
-      //   case ('draw'):
-      //     this.display.text = '     Draw...'
-      //     break
-      //   case (''):
-      //     this.display.text = ''
-      //     break
-      // }
-
-    if (this.powerUpsOnScreen.length !== this.gameState.powerUpsScr.length) {
+    if (this.gameState.powerUpsScr.length !== this.prevState.powerUpsScrLen) {
       this.addPowerUps()
-      this.powerUpsOnScreen = this.gameState.powerUpsScr
     }
 
     this.prevState = {
       over: this.gameState.over,
-      powerups: this.gameState.powerups
+      powerUpsScrLen: this.gameState.powerUpsScr.length
     }
   }
 
   addPowerUps () {
     this.powerUps.clear(true, true)
 
+    console.log(this.powerUps)
+
     this.gameState.powerUpsScr.map(item => {
       this.powerUps.add(this.add.sprite(item.x + 6, item.y + 6, item.name))
     })
   }
-
-  // arraysEqual (a, b) {
-  //   if (a === b) return true
-  //   if (a == null || b == null) return true
-  //   if (a.length != b.length) return false
-
-  //   // If you don't care about the order of the elements inside
-  //   // the array, you should sort both arrays here.
-  //   // Please note that calling sort on an array will modify that array.
-  //   // you might want to clone your array first.
-
-  //   for (var i = 0; i < a.length; ++i) {
-  //     if (a[i] !== b[i]) return false
-  //   }
-  //   return true
-  // }
 
   createAnimations () {
     if (this.anims.anims) {
@@ -302,6 +338,10 @@ export default class GameScene extends Phaser.Scene {
         })
       })
     })
+  }
+
+  colors () {
+    return ['9fddf2', '6eefd3', 'e2c973', 'ccc9c1', 'adacab']
   }
 
   clearKeys () {

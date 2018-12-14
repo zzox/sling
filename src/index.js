@@ -1,8 +1,9 @@
 import 'phaser'
 import BootScene from './Scenes/BootScene'
-import ClickStart from './Scenes/ClickStart'
 import TitleScene from './Scenes/TitleScene'
 import GameScene from './Scenes/GameScene'
+import LocalWinner from './Scenes/LocalWinner'
+import AIEnd from './Scenes/AIEnd'
 
 const config = {
   type: Phaser.WEBGL,
@@ -13,9 +14,10 @@ const config = {
   roundPixels: true,
   scene: [
     BootScene,
-    ClickStart,
     TitleScene,
-    GameScene
+    GameScene,
+    LocalWinner,
+    AIEnd
   ],
   debug: true
 }

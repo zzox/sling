@@ -25,6 +25,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.bitmapFont('font', 'assets/fonts/manaspace.png', 'assets/fonts/manaspace.fnt')
 
     this.load.json('animations', 'assets/data/animations.json')
+    this.load.json('stages', 'assets/data/stages.json')
   }
   
   create()

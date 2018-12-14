@@ -1,13 +1,14 @@
-export default class Player extends Phaser.GameObjects.Sprite {
-  constructor(scene, position, color) {
-    super(scene, position)
+export default class AI extends Phaser.GameObjects.Sprite {
+  constructor(scene, position, config) {
+    super(scene, position, config)
     scene.add.existing(this)
     console.log(scene)
+    console.log(config)
     // super(position)
     this.position = position
     this.player = `player${position}`
     this.scene = scene
-    this.color = color
+    this.color = config.color
     this.animation = 'idle'
     this.setOrigin(0)
   }

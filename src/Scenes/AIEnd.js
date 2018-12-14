@@ -1,17 +1,30 @@
-export default class TitleScene extends Phaser.Scene {
+export default class AIEnd extends Phaser.Scene {
   constructor(test) {
-    super({ key: 'TitleScene' })
+    super({ key: 'AIEnd' })
   }
 
   preload(){
     this.load.image('selector', 'assets/menu/selector.png')
-    this.load.image('title', 'assets/menu/sling.png')
   }
 
   create(){
-    this.add.image(96, 26, 'title')
-    this.add.bitmapText(80, 70, 'font', 'vs AI')
-    this.add.bitmapText(80, 90, 'font', 'Local')
+    console.log(this.sys.settings.data)
+    this.won = this.sys.settings.data.won
+    this.stage = this.sys.settings.data.stage
+
+    if (this.won) {
+      this.add.bitmapText(80, 70, 'font', 'Next')
+      this.add.bitmapText(80, 90, 'font', 'Quit')
+    } else {      
+      this.add.bitmapText(80, 70, 'font', 'Restart')
+      this.add.bitmapText(80, 90, 'font', 'Quit')
+    }
+
+    if (this.won) {
+      this.add.bitmapText(62, 20, 'font', 'You Won!')
+    } else {
+      this.add.bitmapText(56, 20, 'font', 'You Lost...')
+    }
 
     this.menuPositions = 2
     this.menuPos = 1
@@ -27,19 +40,16 @@ export default class TitleScene extends Phaser.Scene {
     this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
 
     this.cameras.main.fadeIn(2000)
-
-    this.music = this.sound.playAudioSprite('audio', 'theme', { loop: true })
   }
 
   update(){
     if(this.startKey.isDown && !this.prevState.startKey && this.menuPos === 1){
       this.pauseMusic()
-      this.vsAI()
+      this.nextStage()
       return
     } else if(this.startKey.isDown && !this.prevState.startKey && this.menuPos === 2){
       this.pauseMusic()
-      this.local()
-      return
+      this.quit()
     }
 
     if(this.moveKey.isDown && this.moveKey.isDown !== this.prevState.moveKey){
@@ -60,14 +70,14 @@ export default class TitleScene extends Phaser.Scene {
     }
   }
 
-  vsAI(){
+  nextStage () {
     this.clearKeys()
-    this.scene.start('GameScene', { local: false, stage: 'one' })
+    this.scene.start('GameScene', { local: false, stage: this.stage })
   }
 
-  local(){
+  quit () {
     this.clearKeys()
-    this.scene.start('GameScene', { local: true })
+    this.scene.start('TitleScene')
   }
 
   pauseMusic () {

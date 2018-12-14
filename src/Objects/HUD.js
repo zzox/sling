@@ -21,6 +21,11 @@ export default class HUD {
       player1: 0, 
       player2: 0 
     }
+
+    this.prevState = {
+    	player1puLen: 0,
+    	player2puLen: 0
+    }
 	}
 
 	update () {
@@ -34,12 +39,12 @@ export default class HUD {
       this.drawPoints(2)
     }
 
-    if (this.player1pu.length !== this.scene.gameState.player1.state.powerUps.length) {
+    if (this.prevState.player1puLen !== this.scene.gameState.player1.state.powerUps.length) {
     	this.player1pu = this.scene.gameState.player1.state.powerUps
     	this.drawPowerUps(1)
     }
 
-    if (this.player2pu.length !== this.scene.gameState.player2.state.powerUps.length) {
+    if (this.prevState.player2puLen !== this.scene.gameState.player2.state.powerUps.length) {
     	this.player2pu = this.scene.gameState.player2.state.powerUps
     	this.drawPowerUps(2)
     }
@@ -78,6 +83,11 @@ export default class HUD {
       case (''):
         this.display.text = ''
         break
+    }
+
+    this.prevState = {
+    	player1puLen: this.scene.gameState.player1.state.powerUps.length,
+    	player2puLen: this.scene.gameState.player2.state.powerUps.length
     }
 	}
 
