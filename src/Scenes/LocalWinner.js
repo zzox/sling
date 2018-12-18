@@ -15,9 +15,9 @@ export default class LocalWinner extends Phaser.Scene {
     this.winner = this.sys.settings.data.winner
 
     if (this.winner === 'player1') {
-      this.add.bitmapText(55, 20, 'font', 'Player 1 Wins!')
+      this.add.bitmapText(53, 20, 'font', 'Player 1 Wins!')
     } else {
-      this.add.bitmapText(55, 20, 'font', 'Player 2 Wins!')
+      this.add.bitmapText(53, 20, 'font', 'Player 2 Wins!')
     }
 
     this.menuPositions = 2

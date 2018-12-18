@@ -6,6 +6,33 @@ export default class HUD {
       .fillRectShape(new Phaser.Geom.Rectangle(0, 0, 192, 24))
       .setScrollFactor(0, 0)
 
+    switch (this.scene.matchTo) {
+      case (7):
+		    this.scene.add.graphics({ fillStyle: { color: 0xFFFFFF } })
+		      .fillRectShape(new Phaser.Geom.Rectangle(35, 0, 2, 12))
+		      .setScrollFactor(0, 0)
+		    this.scene.add.graphics({ fillStyle: { color: 0xFFFFFF } })
+		      .fillRectShape(new Phaser.Geom.Rectangle(155, 0, 2, 12))
+		      .setScrollFactor(0, 0)
+        break
+      case (11):
+		    this.scene.add.graphics({ fillStyle: { color: 0xFFFFFF } })
+		      .fillRectShape(new Phaser.Geom.Rectangle(59, 0, 2, 12))
+		      .setScrollFactor(0, 0)
+		    this.scene.add.graphics({ fillStyle: { color: 0xFFFFFF } })
+		      .fillRectShape(new Phaser.Geom.Rectangle(131, 0, 2, 12))
+		      .setScrollFactor(0, 0)
+        break
+      case (16):
+		    this.scene.add.graphics({ fillStyle: { color: 0xFFFFFF } })
+		      .fillRectShape(new Phaser.Geom.Rectangle(89, 0, 2, 12))
+		      .setScrollFactor(0, 0)
+		    this.scene.add.graphics({ fillStyle: { color: 0xFFFFFF } })
+		      .fillRectShape(new Phaser.Geom.Rectangle(101, 0, 2, 12))
+		      .setScrollFactor(0, 0)
+        break
+    }
+
     this.display = this.scene.add.bitmapText(40, 14, 'font', '')
 
     this.player1points = this.scene.add.group()

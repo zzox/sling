@@ -2,8 +2,6 @@ export default class AI extends Phaser.GameObjects.Sprite {
   constructor(scene, position, config) {
     super(scene, position, config)
     scene.add.existing(this)
-    console.log(scene)
-    console.log(config)
     // super(position)
     this.position = position
     this.player = `player${position}`
@@ -51,8 +49,6 @@ export default class AI extends Phaser.GameObjects.Sprite {
 
     // this.colorParticles = this.scene.add.particles(`${this.color}-particle`)
     // this.colorEmitter = this.colorParticles.createEmitter()
-
-    console.log(this.colorEmitter)
   }
 
   update (state) {

@@ -20,13 +20,10 @@ export default class GameScene extends Phaser.Scene {
       this.stage = this.sys.settings.data.stage
       this.stageConfig = this.sys.cache.json.entries.entries.stages[this.stage]
 
-      console.log(this.stage)
-
       this.ai = this.stageConfig.ai
       this.matchTo = this.stageConfig.matchTo
     } else {
-      // this.matchTo = 16
-      this.matchTo = 7
+      this.matchTo = 11
     }
     this.gameObj = new game(this, this.matchTo)
 
@@ -80,7 +77,6 @@ export default class GameScene extends Phaser.Scene {
     // })
     if (this.local) {
       let r = Math.floor(Math.random() * 5)
-      console.log(r)
       this.cameras.main
         .setBackgroundColor(`#${this.colors()[r]}`)
     } else {
@@ -224,8 +220,6 @@ export default class GameScene extends Phaser.Scene {
             this.aiState = 'idle'
           }
 
-          console.log(this.aiState)
-
           this.decisionTime = 0
         } else {
           this.decisionTime += delta
@@ -281,10 +275,14 @@ export default class GameScene extends Phaser.Scene {
     if (this.prevState.over && !this.gameState.over) {
       if (this.gameState.matchOver) {
         if (this.local) {
-          this.scene.start('LocalWinner', this.gameState.winner)
+          this.scene.start('LocalWinner', { winner: this.gameState.winner})
         } else {
           if (this.gameState.winner === 'player1') {
-            this.scene.start('AIEnd', { won: true, stage: this.stageConfig.nextStage })
+            if (this.stageConfig.nextStage === 'over') {
+              this.scene.start('AIEnd', { won: false, stage: 'one', over: true })
+            } else {
+              this.scene.start('AIEnd', { won: true, stage: this.stageConfig.nextStage })
+            }
           } else {
             this.scene.start('AIEnd', { won: false, stage: this.stage })
           }
@@ -312,8 +310,6 @@ export default class GameScene extends Phaser.Scene {
   addPowerUps () {
     this.powerUps.clear(true, true)
 
-    console.log(this.powerUps)
-
     this.gameState.powerUpsScr.map(item => {
       this.powerUps.add(this.add.sprite(item.x + 6, item.y + 6, item.name))
     })
@@ -325,7 +321,6 @@ export default class GameScene extends Phaser.Scene {
     }
 
     this.animsArray.map(item => {
-      console.log(item)
       let sheet = this.animsConfig[item].sheet
 
       this.animsConfig[item].anims.map(anim => {

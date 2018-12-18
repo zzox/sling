@@ -2,7 +2,7 @@
 	"one": {
 		"backgroundColor": "9fddf2",
 		"nextStage": "two",
-		"matchTo": 1,
+		"matchTo": 7,
 		"ai": {
 			"color": "gray",
 			"decisionTime": 250,

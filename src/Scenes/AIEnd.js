@@ -8,9 +8,9 @@ export default class AIEnd extends Phaser.Scene {
   }
 
   create(){
-    console.log(this.sys.settings.data)
     this.won = this.sys.settings.data.won
     this.stage = this.sys.settings.data.stage
+    this.over = this.sys.settings.data.over
 
     if (this.won) {
       this.add.bitmapText(80, 70, 'font', 'Next')
@@ -20,10 +20,12 @@ export default class AIEnd extends Phaser.Scene {
       this.add.bitmapText(80, 90, 'font', 'Quit')
     }
 
-    if (this.won) {
-      this.add.bitmapText(62, 20, 'font', 'You Won!')
+    if (this.over) {
+      this.add.bitmapText(20, 20, 'font', 'You Beat All Levels!')
+    } else if (this.won) {
+      this.add.bitmapText(66, 20, 'font', 'You Won!')
     } else {
-      this.add.bitmapText(56, 20, 'font', 'You Lost...')
+      this.add.bitmapText(60, 20, 'font', 'You Lost...')
     }
 
     this.menuPositions = 2

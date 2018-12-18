@@ -298,7 +298,6 @@ class Game {
         this.player1.innerState.xVel = this.player1.innerState.dashVel * perSec
         this.player1.innerState.yVel = 0
       }
-      // console.log(this.player1.innerState.dashVel * perSec)
     }
 
     if (!this.player2.state.dashing) {
@@ -508,25 +507,17 @@ class Game {
     if (loser === 1) {
       if (ratio > 0) {
         // player 2 higher
-        console.log('player 2 higher')
-        console.log(ratio)
         this.player1.innerState.xVel = -redirVel * (1 - ratio) * perSec
         this.player1.innerState.yVel = redirVel * ratio * perSec          
       } else {
-        console.log('player 2 lower')
-        console.log(ratio)
         this.player1.innerState.xVel = -redirVel * (1 + ratio) * perSec
         this.player1.innerState.yVel = redirVel * ratio * perSec    
       }
     } else if(loser === 2) {
       if (ratio < 0) {
-        console.log('player 1 higher')
-        console.log(ratio)
         this.player2.innerState.xVel = redirVel * (1 + ratio) * perSec
         this.player2.innerState.yVel = redirVel * -ratio * perSec          
       } else {
-        console.log('player 1 lower')
-        console.log(ratio)
         this.player2.innerState.xVel = redirVel * (1 - ratio) * perSec
         this.player2.innerState.yVel = -redirVel * ratio * perSec    
       }       
@@ -534,8 +525,6 @@ class Game {
   }
   
   addPowerUp (player, powerUp) {
-    // console.log(player)
-    // console.log(powerUp)
     switch (powerUp) {
       case ('threeJumps'):
         if (player === 1) {

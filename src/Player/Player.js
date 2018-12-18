@@ -2,7 +2,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
   constructor(scene, position, color) {
     super(scene, position)
     scene.add.existing(this)
-    console.log(scene)
     // super(position)
     this.position = position
     this.player = `player${position}`
@@ -47,11 +46,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
       .setQuantity(3)
 
     this.purpleEmitter.on = false
-
-    // this.colorParticles = this.scene.add.particles(`${this.color}-particle`)
-    // this.colorEmitter = this.colorParticles.createEmitter()
-
-    console.log(this.colorEmitter)
   }
 
   update (state) {
