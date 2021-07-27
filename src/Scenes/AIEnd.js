@@ -34,27 +34,44 @@ export default class AIEnd extends Phaser.Scene {
     this.spr = this.add.sprite(68, 67, 'selector')
 
     this.prevState = {
-      moveKey: true,
-      startKey: true      
+      upKey: true,
+      downKey: true,
+      startKey: true,
+      startKeyAlt: true
     }
 
-    this.moveKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
-    this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+    this.upKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.UP)
+    this.downKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.DOWN)
+    this.startKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
+    this.startKeyAlt = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
 
     this.cameras.main.fadeIn(2000)
   }
 
   update(){
-    if(this.startKey.isDown && !this.prevState.startKey && this.menuPos === 1){
-      this.pauseMusic()
-      this.nextStage()
-      return
-    } else if(this.startKey.isDown && !this.prevState.startKey && this.menuPos === 2){
-      this.pauseMusic()
-      this.quit()
+    if ((this.startKey.isDown && !this.prevState.startKey) || (this.startKeyAlt.isDown && !this.prevState.startKeyAlt)) {
+      if(this.menuPos === 1){
+        this.pauseMusic()
+        this.nextStage()
+        return
+      } else if(this.menuPos === 2){
+        this.pauseMusic()
+        this.quit()
+        return
+      }
     }
 
-    if(this.moveKey.isDown && this.moveKey.isDown !== this.prevState.moveKey){
+    if(this.upKey.isDown && this.upKey.isDown !== this.prevState.upKey){
+      if(this.menuPos === 1){
+        this.menuPos = this.menuPositions // only for main
+      } else {
+        this.menuPos--
+      }
+
+      this.sound.playAudioSprite('audio', 'selector', { volume: 0.5 })
+    }
+
+    if(this.downKey.isDown && this.downKey.isDown !== this.prevState.downKey){
       if(this.menuPos === this.menuPositions){
         this.menuPos = 1 // only for main
       } else {
@@ -67,8 +84,10 @@ export default class AIEnd extends Phaser.Scene {
     this.spr.y = this.menuPos * 20 + 54
 
     this.prevState = {
-      moveKey: this.moveKey.isDown,
-      startKey: this.startKey.isDown
+      upKey: this.upKey.isDown,
+      downKey: this.downKey.isDown,
+      startKey: this.startKey.isDown,
+      startKeyAlt: this.startKeyAlt.isDown
     }
   }
 
@@ -92,8 +111,10 @@ export default class AIEnd extends Phaser.Scene {
   }
 
   clearKeys () {
-    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.A)
-    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.S)
+    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.UP)
+    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.DOWN)
+    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
+    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.X)
   }
 
 }

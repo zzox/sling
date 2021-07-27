@@ -103,14 +103,18 @@ export default class GameScene extends Phaser.Scene {
     if (this.local) {
       this.keys = {
         oneJump: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
+        oneJumpAlt: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z),
         oneDash: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+        oneDashAlt: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X),
         twoJump: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L),
         twoDash: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K)
       }
     } else {
       this.keys = {
         oneJump: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
-        oneDash: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S)
+        oneJumpAlt: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z),
+        oneDash: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
+        oneDashAlt: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X)
       }
     }
 
@@ -186,8 +190,8 @@ export default class GameScene extends Phaser.Scene {
     if (this.local) {
       input = {
         player1: {
-          jump: this.keys.oneJump.isDown,
-          dash: this.keys.oneDash.isDown
+          jump: this.keys.oneJump.isDown || this.keys.oneJumpAlt.isDown,
+          dash: this.keys.oneDash.isDown || this.keys.oneDashAlt.isDown
         },
         player2: {
           jump: this.keys.twoJump.isDown,
@@ -243,8 +247,8 @@ export default class GameScene extends Phaser.Scene {
 
       input = {
         player1: {
-          jump: this.keys.oneJump.isDown,
-          dash: this.keys.oneDash.isDown
+          jump: this.keys.oneJump.isDown || this.keys.oneJumpAlt.isDown,
+          dash: this.keys.oneDash.isDown || this.keys.oneDashAlt.isDown
         },
         player2: {
           jump: jump,
@@ -342,6 +346,8 @@ export default class GameScene extends Phaser.Scene {
   clearKeys () {
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.A)
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.S)
+    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.Z)
+    this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.X)
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.L)
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.K)
   }
